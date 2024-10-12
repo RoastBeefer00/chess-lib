@@ -1,10 +1,12 @@
+use strum::{IntoEnumIterator, EnumIter};
+
 #[derive(Debug, PartialEq)]
 pub struct Piece {
     pub piece: PieceType,
     pub color: Color,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(EnumIter, Debug, PartialEq)]
 pub enum PieceType {
     Pawn,
     Knight,
@@ -15,7 +17,7 @@ pub enum PieceType {
 }
 
 impl PieceType {
-    fn value(&self) -> usize {
+    pub fn value(&self) -> usize {
         match self {
             Self::Pawn => 1,
             Self::Knight => 8,

@@ -450,4 +450,12 @@ mod tests {
             value += 1;
         });
     }
+
+    #[test]
+    fn test_piece_values() {
+        let values = vec![1, 8, 8, 5, 9, 0];
+        piece::PieceType::iter().enumerate().for_each(|(i, piece)| {
+            assert_eq!(values[i], piece.value());
+        });
+    }
 }
