@@ -157,6 +157,13 @@ impl Default for Board {
     }
 }
 
+impl Board {
+    pub fn make_move(from: &mut Square, to: &mut Square) {
+        to.piece = from.piece;
+        from.piece = None;
+    }
+}
+
 #[derive(EnumIter, Debug, PartialEq, Clone, Copy)]
 pub enum Rank {
     One = 1,

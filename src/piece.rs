@@ -1,12 +1,12 @@
 use strum::{IntoEnumIterator, EnumIter};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Piece {
     pub piece: PieceType,
     pub color: Color,
 }
 
-#[derive(EnumIter, Debug, PartialEq)]
+#[derive(EnumIter, Debug, PartialEq, Copy, Clone)]
 pub enum PieceType {
     Pawn,
     Knight,
@@ -29,7 +29,7 @@ impl PieceType {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Color {
     Black,
     White,
