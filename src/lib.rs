@@ -458,4 +458,11 @@ mod tests {
             assert_eq!(values[i], piece.value());
         });
     }
+
+    #[test]
+    fn test_count_material_default() {
+        let board = Board::default();
+        assert_eq!(39, board.count_material(Color::Black));
+        assert_eq!(39, board.count_material(Color::White));
+    }
 }

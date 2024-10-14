@@ -1,4 +1,4 @@
-use crate::piece::{Piece, PieceType, Color};
+use crate::piece::{self, Color, Piece, PieceType};
 use strum::{IntoEnumIterator, EnumIter};
 
 #[derive(Debug, PartialEq)]
@@ -158,6 +158,25 @@ impl Default for Board {
 }
 
 impl Board {
+    pub fn count_material(&self, color: piece::Color) -> usize {
+        self
+            .squares
+            .iter()
+            .filter(|s| {
+                if let Some(piece) = s.piece {
+                    piece.color == color
+                } else {
+                    false
+                }
+            })
+            .map(|s| {
+                if let Some(piece) = s.piece {
+                    piece.piece.value() 
+                } else { 0 }
+            })
+            .sum()
+    }
+
     pub fn make_move(from: &mut Square, to: &mut Square) {
         to.piece = from.piece;
         from.piece = None;
