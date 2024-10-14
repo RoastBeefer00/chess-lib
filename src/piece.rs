@@ -20,8 +20,8 @@ impl PieceType {
     pub fn value(&self) -> usize {
         match self {
             Self::Pawn => 1,
-            Self::Knight => 8,
-            Self::Bishop => 8,
+            Self::Knight => 3,
+            Self::Bishop => 3,
             Self::Rook => 5,
             Self::Queen => 9,
             Self::King => 0,
