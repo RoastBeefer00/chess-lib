@@ -1,5 +1,6 @@
 use crate::piece::{self, Color, Piece, PieceType};
 use strum::{IntoEnumIterator, EnumIter};
+use thiserror::Error;
 
 #[derive(Debug, PartialEq)]
 pub struct Board {
@@ -177,9 +178,15 @@ impl Board {
             .sum()
     }
 
-    pub fn make_move(from: &mut Square, to: &mut Square) {
-        to.piece = from.piece;
-        from.piece = None;
+    pub fn get_square(&mut self, file: File, rank: Rank) -> Result<&mut Square, SquareError> {
+        let search = self.squares
+            .iter()
+            .position(|s| s.file == file && s.rank == rank);
+        let i = match search {
+            Some(i) => i,
+            None => return Err(SquareError::NotFound(file, rank)),
+        };
+        Ok(self.squares.get_mut(i).unwrap())
     }
 }
 
@@ -224,4 +231,10 @@ pub struct Square {
     pub file: File,
     pub rank: Rank,
     pub piece: Option<Piece>,
+}
+
+#[derive(Error, Debug)]
+pub enum SquareError {
+    #[error("Unable to find square at rank {1:?} and file {0:?}")]
+    NotFound(File, Rank),
 }

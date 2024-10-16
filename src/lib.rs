@@ -1,5 +1,7 @@
 mod board;
 mod piece;
+mod movement;
+mod player;
 
 
 #[cfg(test)]
@@ -464,5 +466,20 @@ mod tests {
         let board = Board::default();
         assert_eq!(39, board.count_material(Color::Black));
         assert_eq!(39, board.count_material(Color::White));
+    }
+
+    #[test]
+    fn test_get_square() {
+        let mut board = Board::default();
+        let file = File::E;
+        let rank = Rank::Four;
+        let mut square = Square {
+            file,
+            rank,
+            piece: None,
+        };
+
+        let result = board.get_square(file, rank);
+        assert_eq!(&mut square, result.unwrap());
     }
 }
