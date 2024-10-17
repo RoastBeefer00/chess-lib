@@ -482,4 +482,25 @@ mod tests {
         let result = board.get_square(file, rank);
         assert_eq!(&mut square, result.unwrap());
     }
+
+    #[test]
+    fn test_make_move() {
+        let mut board = Board::default();
+        let mut e2 = Square {
+            file: File::E,
+            rank: Rank::Two,
+            piece: None,
+        };
+        let mut e4 = Square {
+            file: File::E,
+            rank: Rank::Four,
+            piece: Some(Piece {
+                piece: PieceType::Pawn,
+                color: Color::White,
+            }),
+        };
+        board.make_move(&e4, &e2, None);
+        assert_eq!(&mut e2, board.get_square(File::E, Rank::Two).unwrap());
+        assert_eq!(&mut e4, board.get_square(File::E, Rank::Four).unwrap());
+    }
 }

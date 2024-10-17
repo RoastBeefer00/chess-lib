@@ -1,4 +1,5 @@
 use crate::piece::{self, Color, Piece, PieceType};
+use crate::movement::SpecialMove;
 use strum::{IntoEnumIterator, EnumIter};
 use thiserror::Error;
 
@@ -187,6 +188,37 @@ impl Board {
             None => return Err(SquareError::NotFound(file, rank)),
         };
         Ok(self.squares.get_mut(i).unwrap())
+    }
+
+    pub fn make_move(&mut self, to: &Square, from: &Square, special: Option<SpecialMove>) {
+        if let Some(s) = special {
+            match s {
+                SpecialMove::Promotion(piece_type) => {
+                    {
+                        self.get_square(to.file, to.rank).unwrap().piece = Some(Piece {
+                            piece: piece_type,
+                            color: to.piece.unwrap().color,
+                        });
+                    }
+                    {
+                        self.get_square(from.file, from.rank).unwrap().piece = None;
+                    }
+                },
+                // SpecialMove::EnPassant => {},
+                SpecialMove::CastleKingside => {},
+                SpecialMove::CastleQueenside => {},
+            };
+        } else {
+                    {
+                        self.get_square(to.file, to.rank).unwrap().piece = Some(Piece {
+                            piece: to.piece.unwrap().piece,
+                            color: to.piece.unwrap().color,
+                        });
+                    }
+                    {
+                        self.get_square(from.file, from.rank).unwrap().piece = None;
+                    }
+        }
     }
 }
 
