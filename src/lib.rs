@@ -10,7 +10,7 @@ mod tests {
 
     use super::*;
     use board::*;
-    // use movement::make_move;
+    use movement::{Move, SpecialMove};
     use piece::*;
     use strum::IntoEnumIterator;
 
@@ -471,29 +471,64 @@ mod tests {
         assert_eq!(39, board.count_material(Color::White));
     }
 
-    // #[test]
-    // fn test_get_square() {
-    //     let mut board = Board::default();
-    //     let file = File::E;
-    //     let rank = Rank::Four;
-    //     let mut square = Square {
-    //         file,
-    //         rank,
-    //         piece: None,
-    //     };
-    //
-    //     let result = board.get_square(file, rank);
-    //     assert_eq!(&mut square, result.unwrap());
-    // }
+    #[test]
+    fn test_get_piece() {
+        let board = Board::default();
+        let e2 = Square {
+            file: File::E,
+            rank: Rank::Two,
+        };
+        let piece = Piece {
+            piece: PieceType::Pawn,
+            color: Color::White,
+        };
 
-    // #[test]
-    // fn test_move_piece() {
-    //     let mut board = Board::default();
-    //     let e4 = &mut board.get_square(File::E, Rank::Four).unwrap();
-    //     let e2 = &mut board.get_square(File::E, Rank::Four).unwrap();
-    //     make_move(e4, e2, None);
-    //
-    //     let e4 = board.get_square(File::E, Rank::Four);
-    //     let e2 = board.get_square(File::E, Rank::Four);
-    // }
+        let result = board.get_piece(&e2);
+        assert_eq!(&Some(piece), result.unwrap());
+
+        let e4 = Square {
+            file: File::E,
+            rank: Rank::Four,
+        };
+        let piece = None;
+
+        let result = board.get_piece(&e4);
+        assert_eq!(&piece, result.unwrap());
+
+        let e8 = Square {
+            file: File::E,
+            rank: Rank::Eight,
+        };
+        let piece = Piece {
+            piece: PieceType::King,
+            color: Color::Black,
+        };
+
+        let result = board.get_piece(&e8);
+        assert_eq!(&Some(piece), result.unwrap());
+    }
+
+    #[test]
+    fn test_move_piece() {
+        let mut board = Board::default();
+        let e2 = Square {
+            file: File::E,
+            rank: Rank::Two,
+        };
+        let e4 = Square {
+            file: File::E,
+            rank: Rank::Four,
+        };
+        let m = Move {
+            from: e2,
+            to: e4,
+            special: None,
+        };
+        board.make_move(m).unwrap();
+        assert_eq!(&None, board.get_piece(&e2).unwrap());
+        assert_eq!(&Some(Piece {
+            piece: PieceType::Pawn,
+            color: Color::White,
+        }), board.get_piece(&e4).unwrap());
+    }
 }
