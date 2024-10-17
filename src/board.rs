@@ -1,5 +1,6 @@
 use crate::piece::{self, Color, Piece, PieceType};
 use std::collections::HashMap;
+use crate::movement::SpecialMove;
 use strum::{EnumIter, IntoEnumIterator};
 use thiserror::Error;
 
@@ -173,22 +174,32 @@ impl Board {
             .sum()
     }
 
-    // pub fn get_piece(&mut self, square: Square) -> Result<&mut Option<Piece>, SquareError> {
-    //     let search = self
-    //         .squares.get_mut(&square);
-    //     match search {
-    //         Some(piece) => Ok(piece),
-    //         None => Err(SquareError::NotFound(square.file, square.rank)),
-    //     }
-    // }
+    pub fn get_piece(&mut self, square: &Square) -> Result<&mut Option<Piece>, SquareError> {
+        let search = self
+            .squares.get_mut(&square);
+        match search {
+            Some(piece) => Ok(piece),
+            None => Err(SquareError::NotFound(square.file, square.rank)),
+        }
+    }
     
-    pub fn make_move(&mut self, from: Square, to: Square) -> Result<(), SquareError> {
-        let from_piece = match self.squares.get_mut(&from) {
-            Some(p) => p,
-            None => return Err(SquareError::NotFound(from.file, from.rank)),
+    pub fn make_move(&mut self, from: Square, to: Square, special: Option<SpecialMove>) -> Result<(), SquareError> {
+        // Get piece on "from" square to be placed in the "to" square
+        let from_piece = match self.get_piece(&from) {
+            Ok(piece) => piece.to_owned(),
+            Err(e) => return Err(e),
         };
-        self.squares.entry(to).and_modify(|piece| *piece = from_piece.to_owned());
-        *from_piece = None;
+        // Validate the "to" square exists
+        if let Err(e) = self.get_piece(&to) {
+            return Err(e);
+        }
+        // Update pieces in squares
+        {
+            self.squares.entry(to).and_modify(|piece| *piece = from_piece);
+        }
+        {
+            self.squares.entry(from).and_modify(|piece| *piece = None);
+        }
 
         Ok(())
     }
@@ -230,7 +241,7 @@ impl File {
     }
 }
 
-#[derive(Eq, Hash, Debug, PartialEq)]
+#[derive(Eq, Hash, Debug, PartialEq, Clone, Copy)]
 pub struct Square {
     pub file: File,
     pub rank: Rank,
