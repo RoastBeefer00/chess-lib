@@ -1,196 +1,200 @@
 use crate::piece::{self, Color, Piece, PieceType};
-use strum::{IntoEnumIterator, EnumIter};
+use std::collections::HashMap;
+use strum::{EnumIter, IntoEnumIterator};
 use thiserror::Error;
 
 #[derive(Debug, PartialEq)]
 pub struct Board {
-    pub squares: Vec<Square>,
+    pub squares: HashMap<Square, Option<Piece>>,
 }
 
 impl Default for Board {
     fn default() -> Self {
-        let mut squares: Vec<Square> = Vec::new();
+        let mut squares: HashMap<Square, Option<Piece>> = HashMap::new();
         for rank in Rank::iter() {
             for file in File::iter() {
                 match rank {
-                    Rank::One => {
-                        match file {
-                            File::A | File::H => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Rook,
-                                        color: Color::White,
-                                    }),
-                                });
-                            },
-                            File::B | File::G => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Knight,
-                                        color: Color::White,
-                                    }),
-                                });
-                            },
-                            File::C | File::F => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Bishop,
-                                        color: Color::White,
-                                    }),
-                                });
-                            },
-                            File::D => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Queen,
-                                        color: Color::White,
-                                    }),
-                                });
-                            },
-                            File::E => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::King,
-                                        color: Color::White,
-                                    }),
-                                });
-                            },
+                    Rank::One => match file {
+                        File::A | File::H => {
+                            squares.insert(
+                                Square { file, rank },
+                                Some(Piece {
+                                    piece: PieceType::Rook,
+                                    color: Color::White,
+                                }),
+                            );
+                        }
+                        File::B | File::G => {
+                            squares.insert(
+                                Square { file, rank },
+                                Some(Piece {
+                                    piece: PieceType::Knight,
+                                    color: Color::White,
+                                }),
+                            );
+                        }
+                        File::C | File::F => {
+                            squares.insert(
+                                Square { file, rank },
+                                Some(Piece {
+                                    piece: PieceType::Bishop,
+                                    color: Color::White,
+                                }),
+                            );
+                        }
+                        File::D => {
+                            squares.insert(
+                                Square { file, rank },
+                                Some(Piece {
+                                    piece: PieceType::Queen,
+                                    color: Color::White,
+                                }),
+                            );
+                        }
+                        File::E => {
+                            squares.insert(
+                                Square { file, rank },
+                                Some(Piece {
+                                    piece: PieceType::King,
+                                    color: Color::White,
+                                }),
+                            );
                         }
                     },
                     Rank::Two => {
-                        squares.push(Square {
-                            file,
-                            rank,
-                            piece: Some(Piece {
+                        squares.insert(
+                            Square { file, rank },
+                            Some(Piece {
                                 piece: PieceType::Pawn,
                                 color: Color::White,
                             }),
-                        });
-                    },
+                        );
+                    }
                     Rank::Three | Rank::Four | Rank::Five | Rank::Six => {
-                        squares.push(Square {
-                            file,
-                            rank,
-                            piece: None,
-                        });
-                    }, 
+                        squares.insert(Square { file, rank }, None);
+                    }
                     Rank::Seven => {
-                        squares.push(Square {
-                            file,
-                            rank,
-                            piece: Some(Piece {
+                        squares.insert(
+                            Square { file, rank },
+                            Some(Piece {
                                 piece: PieceType::Pawn,
                                 color: Color::Black,
                             }),
-                        });
-                    },
-                    Rank::Eight => {
-                        match file {
-                            File::A | File::H => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Rook,
-                                        color: Color::Black,
-                                    }),
-                                });
-                            },
-                            File::B | File::G => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Knight,
-                                        color: Color::Black,
-                                    }),
-                                });
-                            },
-                            File::C | File::F => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Bishop,
-                                        color: Color::Black,
-                                    }),
-                                });
-                            },
-                            File::D => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::Queen,
-                                        color: Color::Black,
-                                    }),
-                                });
-                            },
-                            File::E => {
-                                squares.push(Square {
-                                    file,
-                                    rank,
-                                    piece: Some(Piece {
-                                        piece: PieceType::King,
-                                        color: Color::Black,
-                                    }),
-                                });
-                            },
+                        );
+                    }
+                    Rank::Eight => match file {
+                        File::A | File::H => {
+                            squares.insert(
+                                Square {
+                                file,
+                                rank,
+                                },
+                                Some(Piece {
+                                    piece: PieceType::Rook,
+                                    color: Color::Black,
+                                }),
+                            );
+                        }
+                        File::B | File::G => {
+                            squares.insert(
+                                Square {
+                                file,
+                                rank,
+                                },
+                                Some(Piece {
+                                    piece: PieceType::Knight,
+                                    color: Color::Black,
+                                }),
+                            );
+                        }
+                        File::C | File::F => {
+                            squares.insert(
+                                Square {
+                                file,
+                                rank,
+                                },
+                                Some(Piece {
+                                    piece: PieceType::Bishop,
+                                    color: Color::Black,
+                                }),
+                            );
+                        }
+                        File::D => {
+                            squares.insert(
+                                Square {
+                                file,
+                                rank,
+                                },
+                                Some(Piece {
+                                    piece: PieceType::Queen,
+                                    color: Color::Black,
+                                }),
+                            );
+                        }
+                        File::E => {
+                            squares.insert(
+                                Square {
+                                file,
+                                rank,
+                                },
+                                Some(Piece {
+                                    piece: PieceType::King,
+                                    color: Color::Black,
+                                }),
+                            );
                         }
                     },
                 }
             }
         }
-        
-        Self {
-            squares
-        }
+
+        Self { squares }
     }
 }
 
 impl Board {
     pub fn count_material(&self, color: piece::Color) -> usize {
-        self
-            .squares
+        self.squares
             .iter()
             .filter(|s| {
-                if let Some(piece) = s.piece {
+                if let Some(piece) = s.1 {
                     piece.color == color
                 } else {
                     false
                 }
             })
             .map(|s| {
-                if let Some(piece) = s.piece {
-                    piece.piece.value() 
-                } else { 0 }
+                if let Some(piece) = s.1 {
+                    piece.piece.value()
+                } else {
+                    0
+                }
             })
             .sum()
     }
 
-    pub fn get_square(&mut self, file: File, rank: Rank) -> Result<&mut Square, SquareError> {
-        let search = self.squares
-            .iter()
-            .position(|s| s.file == file && s.rank == rank);
-        let i = match search {
-            Some(i) => i,
-            None => return Err(SquareError::NotFound(file, rank)),
+    // pub fn get_piece(&mut self, square: Square) -> Result<&mut Option<Piece>, SquareError> {
+    //     let search = self
+    //         .squares.get_mut(&square);
+    //     match search {
+    //         Some(piece) => Ok(piece),
+    //         None => Err(SquareError::NotFound(square.file, square.rank)),
+    //     }
+    // }
+    
+    pub fn make_move(&mut self, from: Square, to: Square) -> Result<(), SquareError> {
+        let from_piece = match self.squares.get_mut(&from) {
+            Some(p) => p,
+            None => return Err(SquareError::NotFound(from.file, from.rank)),
         };
-        Ok(self.squares.get_mut(i).unwrap())
+        self.squares.entry(to).and_modify(|piece| *piece = from_piece.to_owned());
+        *from_piece = None;
+
+        Ok(())
     }
 }
 
-#[derive(EnumIter, Debug, PartialEq, Clone, Copy)]
+#[derive(Eq, Hash, EnumIter, Debug, PartialEq, Clone, Copy)]
 pub enum Rank {
     One = 1,
     Two,
@@ -208,7 +212,7 @@ impl Rank {
     }
 }
 
-#[derive(EnumIter, Debug, PartialEq, Clone, Copy)]
+#[derive(Eq, Hash, EnumIter, Debug, PartialEq, Clone, Copy)]
 pub enum File {
     A = 1,
     B,
@@ -226,11 +230,10 @@ impl File {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Eq, Hash, Debug, PartialEq)]
 pub struct Square {
     pub file: File,
     pub rank: Rank,
-    pub piece: Option<Piece>,
 }
 
 #[derive(Error, Debug)]
