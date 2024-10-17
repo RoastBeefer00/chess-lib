@@ -174,9 +174,9 @@ impl Board {
             .sum()
     }
 
-    pub fn get_piece(&mut self, square: &Square) -> Result<&mut Option<Piece>, SquareError> {
+    pub fn get_piece(&mut self, square: &Square) -> Result<&Option<Piece>, SquareError> {
         let search = self
-            .squares.get_mut(&square);
+            .squares.get(square);
         match search {
             Some(piece) => Ok(piece),
             None => Err(SquareError::NotFound(square.file, square.rank)),
