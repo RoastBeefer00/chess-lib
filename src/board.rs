@@ -1,6 +1,6 @@
 use crate::piece::{self, Color, Piece, PieceType};
 use std::collections::HashMap;
-use crate::movement::SpecialMove;
+use crate::movement::{Move, SpecialMove};
 use strum::{EnumIter, IntoEnumIterator};
 use thiserror::Error;
 
@@ -183,22 +183,22 @@ impl Board {
         }
     }
     
-    pub fn make_move(&mut self, from: Square, to: Square, special: Option<SpecialMove>) -> Result<(), SquareError> {
+    pub fn make_move(&mut self, m: Move) -> Result<(), SquareError> {
         // Get piece on "from" square to be placed in the "to" square
-        let from_piece = match self.get_piece(&from) {
+        let from_piece = match self.get_piece(&m.from) {
             Ok(piece) => piece.to_owned(),
             Err(e) => return Err(e),
         };
         // Validate the "to" square exists
-        if let Err(e) = self.get_piece(&to) {
+        if let Err(e) = self.get_piece(&m.to) {
             return Err(e);
         }
         // Update pieces in squares
         {
-            self.squares.entry(to).and_modify(|piece| *piece = from_piece);
+            self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
         }
         {
-            self.squares.entry(from).and_modify(|piece| *piece = None);
+            self.squares.entry(m.from).and_modify(|piece| *piece = None);
         }
 
         Ok(())

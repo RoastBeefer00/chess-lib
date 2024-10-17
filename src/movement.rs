@@ -1,5 +1,5 @@
 use crate::board::Square;
-use crate::piece::{Piece, PieceType};
+use crate::piece::PieceType;
 
 pub enum SpecialMove {
     Promotion(PieceType),
@@ -8,10 +8,10 @@ pub enum SpecialMove {
     CastleQueenside,
 }
 
-pub struct Move<'a> {
-    from: &'a mut Square,
-    to: &'a mut Square,
-    special: Option<SpecialMove>,
+pub struct Move {
+    pub from: Square,
+    pub to: Square,
+    pub special: Option<SpecialMove>,
 } 
 
 // pub fn make_move(to: &mut Square, from: &mut Square, special: Option<SpecialMove>) {
