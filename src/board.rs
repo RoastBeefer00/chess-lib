@@ -174,7 +174,7 @@ impl Board {
             .sum()
     }
 
-    pub fn get_piece(&mut self, square: &Square) -> Result<&Option<Piece>, SquareError> {
+    pub fn get_piece(&self, square: &Square) -> Result<&Option<Piece>, SquareError> {
         let search = self
             .squares.get(square);
         match search {
