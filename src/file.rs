@@ -39,3 +39,40 @@ pub enum FileError {
     #[error("Unable to create file from char {0}")]
     CreateFromChar(String),
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_file_values() {
+        let mut value = 1;
+        File::iter().for_each(|file| {
+            assert_eq!(value, file.value());
+            value += 1;
+        });
+    }
+
+    #[test]
+    fn test_file_from_char() {
+        let a = File::from_char('a').unwrap();
+        assert_eq!(File::A, a);
+        let b = File::from_char('b').unwrap();
+        assert_eq!(File::B, b);
+        let c = File::from_char('c').unwrap();
+        assert_eq!(File::C, c);
+        let d = File::from_char('d').unwrap();
+        assert_eq!(File::D, d);
+        let e = File::from_char('e').unwrap();
+        assert_eq!(File::E, e);
+        let f = File::from_char('f').unwrap();
+        assert_eq!(File::F, f);
+        let g = File::from_char('g').unwrap();
+        assert_eq!(File::G, g);
+        let h = File::from_char('h').unwrap();
+        assert_eq!(File::H, h);
+
+        assert_eq!(Err(FileError::CreateFromChar('j'.to_string())), File::from_char('j'));
+        assert_eq!(Err(FileError::CreateFromChar('x'.to_string())), File::from_char('x'));
+    }
+}

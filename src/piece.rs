@@ -43,3 +43,17 @@ pub enum Color {
     Black,
     White,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_piece_values() {
+        let values = vec![1, 3, 3, 5, 9, 0];
+        PieceType::iter().enumerate().for_each(|(i, piece)| {
+            assert_eq!(values[i], piece.value());
+        });
+    }
+
+}
