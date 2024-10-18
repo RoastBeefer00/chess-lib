@@ -1,8 +1,10 @@
 use crate::piece::{self, Color, Piece, PieceType};
 use std::collections::HashMap;
+use strum::IntoEnumIterator;
 use crate::movement::{Move, SpecialMove};
-use strum::{EnumIter, IntoEnumIterator};
-use thiserror::Error;
+use crate::file::File;
+use crate::rank::Rank;
+use crate::square::{Square, SquareError};
 
 #[derive(Debug, PartialEq)]
 pub struct Board {
@@ -462,64 +464,5 @@ impl Board {
     }
 }
 
-#[derive(Eq, Hash, EnumIter, Debug, PartialEq, Clone, Copy)]
-pub enum Rank {
-    One = 1,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-}
 
-impl Rank {
-    pub fn value(self) -> usize {
-        self as usize
-    }
-}
 
-#[derive(Eq, Hash, EnumIter, Debug, PartialEq, Clone, Copy)]
-pub enum File {
-    A = 1,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-}
-
-impl File {
-    pub fn value(self) -> usize {
-        self as usize
-    }
-}
-
-#[derive(Eq, Hash, Debug, PartialEq, Clone, Copy)]
-pub struct Square {
-    pub file: File,
-    pub rank: Rank,
-}
-
-#[derive(Error, Debug)]
-pub enum SquareError {
-    #[error("Unable to find square at rank {1:?} and file {0:?}")]
-    NotFound(File, Rank),
-    #[error("Promotions must be on the first or eight rank and cannot be a pawn")]
-    InvalidPromotion,
-    #[error("Cannot make a move from an empty square")]
-    MoveEmptySquare,
-    #[error("Must select King when castling")]
-    CastleWithKing,
-    #[error("Must move king from e1 to g1 when castling kingside with white")]
-    CastleKingsideWhite,
-    #[error("Must move king from e1 to c1 when castling kingside with white")]
-    CastleQueenSideWhite,
-    #[error("Must move king from e8 to g8 when castling kingside with black")]
-    CastleKingsideBlack,
-    #[error("Must move king from e8 to c8 when castling kingside with black")]
-    CastleQueenSideBlack,
-}

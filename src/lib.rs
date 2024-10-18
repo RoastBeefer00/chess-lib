@@ -1,16 +1,20 @@
 mod board;
-mod piece;
+mod file;
 mod movement;
+mod piece;
 mod player;
+mod rank;
+mod square;
 
 
 #[cfg(test)]
 mod tests {
-    use std::ops::DerefMut;
-
     use super::*;
     use board::*;
-    use movement::{Move, SpecialMove};
+    use file::*;
+    use rank::*;
+    use square::*;
+    use movement::*;
     use piece::*;
     use strum::IntoEnumIterator;
 
@@ -441,7 +445,7 @@ mod tests {
     #[test]
     fn test_rank_values() {
         let mut value = 1;
-        board::Rank::iter().for_each(|rank| {
+        Rank::iter().for_each(|rank| {
             assert_eq!(value, rank.value());
             value += 1;
         });
@@ -450,7 +454,7 @@ mod tests {
     #[test]
     fn test_file_values() {
         let mut value = 1;
-        board::File::iter().for_each(|file| {
+        File::iter().for_each(|file| {
             assert_eq!(value, file.value());
             value += 1;
         });

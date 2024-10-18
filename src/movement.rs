@@ -1,4 +1,4 @@
-use crate::board::Square;
+use crate::square::Square;
 use crate::piece::PieceType;
 
 pub enum SpecialMove {

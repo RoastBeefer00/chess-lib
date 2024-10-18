@@ -6,6 +6,15 @@ pub struct Piece {
     pub color: Color,
 }
 
+impl Piece {
+    pub fn new(unit: PieceType, color: Color) -> Self {
+        Self {
+            unit,
+            color,
+        }
+    }
+}
+
 #[derive(EnumIter, Debug, PartialEq, Copy, Clone)]
 pub enum PieceType {
     Pawn,
