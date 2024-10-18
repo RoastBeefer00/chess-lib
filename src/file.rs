@@ -34,7 +34,7 @@ impl File {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum FileError {
     #[error("Unable to create file from char {0}")]
     CreateFromChar(String),

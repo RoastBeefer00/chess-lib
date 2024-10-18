@@ -39,7 +39,7 @@ impl Square {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum SquareError {
     #[error("Unable to find square at rank {1:?} and file {0:?}")]
     NotFound(File, Rank),

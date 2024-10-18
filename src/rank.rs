@@ -34,7 +34,7 @@ impl Rank {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum RankError {
     #[error("Unable to create rank from char {0}")]
     CreateFromChar(String),
