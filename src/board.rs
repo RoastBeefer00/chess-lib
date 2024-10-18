@@ -190,6 +190,10 @@ impl Board {
                 Ok(piece) => piece.to_owned(),
                 Err(e) => return Err(e),
             };
+
+            // Validate the "to" square exists
+            self.get_piece(&m.to)?;
+
             if let Some(piece) = from_piece {
                 match s {
                     SpecialMove::Promotion(unit) => {
@@ -224,8 +228,210 @@ impl Board {
                             self.squares.entry(m.from).and_modify(|piece| *piece = None);
                         }
                     },
-                    SpecialMove::CastleKingside => {},
-                    SpecialMove::CastleQueenside => {},
+                    SpecialMove::CastleKingside => {
+                        if piece.unit != PieceType::King {
+                            return Err(SquareError::CastleWithKing);
+                        }
+
+                        match piece.color {
+                            Color::White => {
+                                let e1 = Square {
+                                    file: File::E,
+                                    rank: Rank::One,
+                                };
+                                let g1 = Square {
+                                    file: File::G,
+                                    rank: Rank::One,
+                                };
+                                if m.from != e1 || m.to != g1 {
+                                    return Err(SquareError::CastleKingsideWhite);
+                                }
+
+                                let rook = match self.get_piece(&Square {
+                                    file: File::H,
+                                    rank: Rank::One,
+                                }) {
+                                    Ok(piece) => piece.to_owned(),
+                                    Err(e) => return Err(e),
+                                };
+
+                                // Move the rook to f1
+                                {
+                                    self.squares.entry(Square { 
+                                        file: File::F, 
+                                        rank: Rank::One 
+                                    }).and_modify(|piece| *piece = rook);
+                                }
+                                // Move the king to g1
+                                {
+                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                }
+                                // Make e1 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::E,
+                                        rank: Rank::One
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                                // Make h1 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::H,
+                                        rank: Rank::One
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                            },
+                            Color::Black => {
+                                let e8 = Square {
+                                    file: File::E,
+                                    rank: Rank::Eight,
+                                };
+                                let g8 = Square {
+                                    file: File::G,
+                                    rank: Rank::Eight,
+                                };
+                                if m.from != e8 || m.to != g8 {
+                                    return Err(SquareError::CastleKingsideWhite);
+                                }
+
+                                let rook = match self.get_piece(&Square {
+                                    file: File::H,
+                                    rank: Rank::Eight,
+                                }) {
+                                    Ok(piece) => piece.to_owned(),
+                                    Err(e) => return Err(e),
+                                };
+
+                                // Move the rook to f8
+                                {
+                                    self.squares.entry(Square { 
+                                        file: File::F, 
+                                        rank: Rank::Eight
+                                    }).and_modify(|piece| *piece = rook);
+                                }
+                                // Move the king to g8
+                                {
+                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                }
+                                // Make e8 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::E,
+                                        rank: Rank::Eight
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                                // Make h8 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::H,
+                                        rank: Rank::Eight
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                            },
+                        }
+                    },
+                    SpecialMove::CastleQueenside => {
+                         if piece.unit != PieceType::King {
+                            return Err(SquareError::CastleWithKing);
+                        }
+
+                        match piece.color {
+                            Color::White => {
+                                let e1 = Square {
+                                    file: File::E,
+                                    rank: Rank::One,
+                                };
+                                let c1 = Square {
+                                    file: File::C,
+                                    rank: Rank::One,
+                                };
+                                if m.from != e1 || m.to != c1 {
+                                    return Err(SquareError::CastleQueenSideWhite);
+                                }
+
+                                let rook = match self.get_piece(&Square {
+                                    file: File::A,
+                                    rank: Rank::One,
+                                }) {
+                                    Ok(piece) => piece.to_owned(),
+                                    Err(e) => return Err(e),
+                                };
+
+                                // Move the rook to d1
+                                {
+                                    self.squares.entry(Square { 
+                                        file: File::D, 
+                                        rank: Rank::One 
+                                    }).and_modify(|piece| *piece = rook);
+                                }
+                                // Move the king to c1
+                                {
+                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                }
+                                // Make e1 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::E,
+                                        rank: Rank::One
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                                // Make a1 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::A,
+                                        rank: Rank::One
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                            },
+                            Color::Black => {
+                                let e8 = Square {
+                                    file: File::E,
+                                    rank: Rank::Eight,
+                                };
+                                let c8 = Square {
+                                    file: File::C,
+                                    rank: Rank::Eight,
+                                };
+                                if m.from != e8 || m.to != c8 {
+                                    return Err(SquareError::CastleQueenSideBlack);
+                                }
+
+                                let rook = match self.get_piece(&Square {
+                                    file: File::A,
+                                    rank: Rank::Eight,
+                                }) {
+                                    Ok(piece) => piece.to_owned(),
+                                    Err(e) => return Err(e),
+                                };
+
+                                // Move the rook to d8
+                                {
+                                    self.squares.entry(Square { 
+                                        file: File::D, 
+                                        rank: Rank::Eight 
+                                    }).and_modify(|piece| *piece = rook);
+                                }
+                                // Move the king to c8
+                                {
+                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                }
+                                // Make e8 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::E,
+                                        rank: Rank::Eight
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                                // Make h8 empty
+                                {
+                                    self.squares.entry(Square {
+                                        file: File::H,
+                                        rank: Rank::Eight
+                                    }).and_modify(|piece| *piece = None);
+                                }
+                            },
+                        }
+                   },
                 }
             } else {
                 return Err(SquareError::MoveEmptySquare);
@@ -306,4 +512,14 @@ pub enum SquareError {
     InvalidPromotion,
     #[error("Cannot make a move from an empty square")]
     MoveEmptySquare,
+    #[error("Must select King when castling")]
+    CastleWithKing,
+    #[error("Must move king from e1 to g1 when castling kingside with white")]
+    CastleKingsideWhite,
+    #[error("Must move king from e1 to c1 when castling kingside with white")]
+    CastleQueenSideWhite,
+    #[error("Must move king from e8 to g8 when castling kingside with black")]
+    CastleKingsideBlack,
+    #[error("Must move king from e8 to c8 when castling kingside with black")]
+    CastleQueenSideBlack,
 }
