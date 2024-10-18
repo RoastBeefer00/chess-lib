@@ -20,7 +20,7 @@ impl Default for Board {
                             squares.insert(
                                 Square { file, rank },
                                 Some(Piece {
-                                    piece: PieceType::Rook,
+                                    unit: PieceType::Rook,
                                     color: Color::White,
                                 }),
                             );
@@ -29,7 +29,7 @@ impl Default for Board {
                             squares.insert(
                                 Square { file, rank },
                                 Some(Piece {
-                                    piece: PieceType::Knight,
+                                    unit: PieceType::Knight,
                                     color: Color::White,
                                 }),
                             );
@@ -38,7 +38,7 @@ impl Default for Board {
                             squares.insert(
                                 Square { file, rank },
                                 Some(Piece {
-                                    piece: PieceType::Bishop,
+                                    unit: PieceType::Bishop,
                                     color: Color::White,
                                 }),
                             );
@@ -47,7 +47,7 @@ impl Default for Board {
                             squares.insert(
                                 Square { file, rank },
                                 Some(Piece {
-                                    piece: PieceType::Queen,
+                                    unit: PieceType::Queen,
                                     color: Color::White,
                                 }),
                             );
@@ -56,7 +56,7 @@ impl Default for Board {
                             squares.insert(
                                 Square { file, rank },
                                 Some(Piece {
-                                    piece: PieceType::King,
+                                    unit: PieceType::King,
                                     color: Color::White,
                                 }),
                             );
@@ -66,7 +66,7 @@ impl Default for Board {
                         squares.insert(
                             Square { file, rank },
                             Some(Piece {
-                                piece: PieceType::Pawn,
+                                unit: PieceType::Pawn,
                                 color: Color::White,
                             }),
                         );
@@ -78,7 +78,7 @@ impl Default for Board {
                         squares.insert(
                             Square { file, rank },
                             Some(Piece {
-                                piece: PieceType::Pawn,
+                                unit: PieceType::Pawn,
                                 color: Color::Black,
                             }),
                         );
@@ -91,7 +91,7 @@ impl Default for Board {
                                 rank,
                                 },
                                 Some(Piece {
-                                    piece: PieceType::Rook,
+                                    unit: PieceType::Rook,
                                     color: Color::Black,
                                 }),
                             );
@@ -103,7 +103,7 @@ impl Default for Board {
                                 rank,
                                 },
                                 Some(Piece {
-                                    piece: PieceType::Knight,
+                                    unit: PieceType::Knight,
                                     color: Color::Black,
                                 }),
                             );
@@ -115,7 +115,7 @@ impl Default for Board {
                                 rank,
                                 },
                                 Some(Piece {
-                                    piece: PieceType::Bishop,
+                                    unit: PieceType::Bishop,
                                     color: Color::Black,
                                 }),
                             );
@@ -127,7 +127,7 @@ impl Default for Board {
                                 rank,
                                 },
                                 Some(Piece {
-                                    piece: PieceType::Queen,
+                                    unit: PieceType::Queen,
                                     color: Color::Black,
                                 }),
                             );
@@ -139,7 +139,7 @@ impl Default for Board {
                                 rank,
                                 },
                                 Some(Piece {
-                                    piece: PieceType::King,
+                                    unit: PieceType::King,
                                     color: Color::Black,
                                 }),
                             );
@@ -166,7 +166,7 @@ impl Board {
             })
             .map(|s| {
                 if let Some(piece) = s.1 {
-                    piece.piece.value()
+                    piece.unit.value()
                 } else {
                     0
                 }
@@ -184,21 +184,75 @@ impl Board {
     }
     
     pub fn make_move(&mut self, m: Move) -> Result<(), SquareError> {
-        // Get piece on "from" square to be placed in the "to" square
-        let from_piece = match self.get_piece(&m.from) {
-            Ok(piece) => piece.to_owned(),
-            Err(e) => return Err(e),
-        };
-        // Validate the "to" square exists
-        if let Err(e) = self.get_piece(&m.to) {
-            return Err(e);
-        }
-        // Update pieces in squares
-        {
-            self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
-        }
-        {
-            self.squares.entry(m.from).and_modify(|piece| *piece = None);
+        if let Some(s) = m.special {
+            match s {
+                SpecialMove::Promotion(unit) => {
+                    if unit == PieceType::Pawn {
+                        return Err(SquareError::InvalidPromotion)
+                    }
+                    if m.to.rank != Rank::One && m.to.rank != Rank::Eight {
+                        return Err(SquareError::InvalidPromotion)
+                    }
+                    // Get piece on "from" square to be placed in the "to" square
+                    let from_piece = match self.get_piece(&m.from) {
+                        Ok(piece) => piece.to_owned(),
+                        Err(e) => return Err(e),
+                    };
+                    
+                    if let Some(piece) = from_piece {
+                        match piece.color {
+                            Color::White => {
+                                if m.to.rank != Rank::Eight {
+                                    return Err(SquareError::InvalidPromotion);
+                                }
+                            },
+                            Color::Black => {
+                                if m.to.rank != Rank::One {
+                                    return Err(SquareError::InvalidPromotion);
+                                }
+                            },
+                        };
+
+                        let promotion_piece = Some(Piece {
+                            unit,
+                            color: piece.color,
+                        });
+                        // Validate the "to" square exists
+                        self.get_piece(&m.to)?;
+                        // Update pieces in squares
+                        {
+                            self.squares.entry(m.to).and_modify(|piece| *piece = promotion_piece);
+                        }
+                        {
+                            self.squares.entry(m.from).and_modify(|piece| *piece = None);
+                        }
+                    } else {
+                        return Err(SquareError::MoveEmptySquare);
+                    }
+                },
+                SpecialMove::CastleKingside => {},
+                SpecialMove::CastleQueenside => {},
+            }
+        } else {
+            // Get piece on "from" square to be placed in the "to" square
+            let from_piece = match self.get_piece(&m.from) {
+                Ok(piece) => piece.to_owned(),
+                Err(e) => return Err(e),
+            };
+
+            if from_piece == None {
+                return Err(SquareError::MoveEmptySquare)
+            }
+
+            // Validate the "to" square exists
+            self.get_piece(&m.to)?;
+            // Update pieces in squares
+            {
+                self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+            }
+            {
+                self.squares.entry(m.from).and_modify(|piece| *piece = None);
+            }
         }
 
         Ok(())
@@ -251,4 +305,8 @@ pub struct Square {
 pub enum SquareError {
     #[error("Unable to find square at rank {1:?} and file {0:?}")]
     NotFound(File, Rank),
+    #[error("Promotions must be on the first or eight rank and cannot be a pawn")]
+    InvalidPromotion,
+    #[error("Cannot make a move from an empty square")]
+    MoveEmptySquare,
 }

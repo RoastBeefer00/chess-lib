@@ -2,7 +2,7 @@ use strum::{IntoEnumIterator, EnumIter};
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Piece {
-    pub piece: PieceType,
+    pub unit: PieceType,
     pub color: Color,
 }
 

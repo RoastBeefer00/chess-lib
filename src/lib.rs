@@ -479,7 +479,7 @@ mod tests {
             rank: Rank::Two,
         };
         let piece = Piece {
-            piece: PieceType::Pawn,
+            unit: PieceType::Pawn,
             color: Color::White,
         };
 
@@ -500,7 +500,7 @@ mod tests {
             rank: Rank::Eight,
         };
         let piece = Piece {
-            piece: PieceType::King,
+            unit: PieceType::King,
             color: Color::Black,
         };
 
@@ -527,7 +527,7 @@ mod tests {
         board.make_move(m).unwrap();
         assert_eq!(&None, board.get_piece(&e2).unwrap());
         assert_eq!(&Some(Piece {
-            piece: PieceType::Pawn,
+            unit: PieceType::Pawn,
             color: Color::White,
         }), board.get_piece(&e4).unwrap());
     }
