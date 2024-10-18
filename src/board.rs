@@ -185,21 +185,18 @@ impl Board {
     
     pub fn make_move(&mut self, m: Move) -> Result<(), SquareError> {
         if let Some(s) = m.special {
-            match s {
-                SpecialMove::Promotion(unit) => {
-                    if unit == PieceType::Pawn {
-                        return Err(SquareError::InvalidPromotion)
-                    }
-                    if m.to.rank != Rank::One && m.to.rank != Rank::Eight {
-                        return Err(SquareError::InvalidPromotion)
-                    }
-                    // Get piece on "from" square to be placed in the "to" square
-                    let from_piece = match self.get_piece(&m.from) {
-                        Ok(piece) => piece.to_owned(),
-                        Err(e) => return Err(e),
-                    };
-                    
-                    if let Some(piece) = from_piece {
+            // Get piece on "from" square 
+            let from_piece = match self.get_piece(&m.from) {
+                Ok(piece) => piece.to_owned(),
+                Err(e) => return Err(e),
+            };
+            if let Some(piece) = from_piece {
+                match s {
+                    SpecialMove::Promotion(unit) => {
+                        if unit == PieceType::Pawn {
+                            return Err(SquareError::InvalidPromotion)
+                        }
+
                         match piece.color {
                             Color::White => {
                                 if m.to.rank != Rank::Eight {
@@ -226,12 +223,12 @@ impl Board {
                         {
                             self.squares.entry(m.from).and_modify(|piece| *piece = None);
                         }
-                    } else {
-                        return Err(SquareError::MoveEmptySquare);
-                    }
-                },
-                SpecialMove::CastleKingside => {},
-                SpecialMove::CastleQueenside => {},
+                    },
+                    SpecialMove::CastleKingside => {},
+                    SpecialMove::CastleQueenside => {},
+                }
+            } else {
+                return Err(SquareError::MoveEmptySquare);
             }
         } else {
             // Get piece on "from" square to be placed in the "to" square
