@@ -2,8 +2,18 @@ use strum::{IntoEnumIterator, EnumIter};
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Piece {
-    pub piece: PieceType,
+    pub unit: PieceType,
     pub color: Color,
+}
+
+impl Piece {
+    pub fn new(unit: PieceType, color: Color) -> Self {
+        Self {
+            unit,
+            color,
+        }
+    }
+
 }
 
 #[derive(EnumIter, Debug, PartialEq, Copy, Clone)]
@@ -33,4 +43,18 @@ impl PieceType {
 pub enum Color {
     Black,
     White,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_piece_values() {
+        let values = vec![1, 3, 3, 5, 9, 0];
+        PieceType::iter().enumerate().for_each(|(i, piece)| {
+            assert_eq!(values[i], piece.value());
+        });
+    }
+
 }
