@@ -32,12 +32,28 @@ impl Rank {
             _ => Err(RankError::CreateFromChar(c.to_string()))
         }
     }
+
+    pub fn from_usize(u: usize) -> Result<Self, RankError> {
+        match u {
+            1 => Ok(Self::One),
+            2 => Ok(Self::Two),
+            3 => Ok(Self::Three),
+            4 => Ok(Self::Four),
+            5 => Ok(Self::Five),
+            6 => Ok(Self::Six),
+            7 => Ok(Self::Seven),
+            8 => Ok(Self::Eight),
+            _ => Err(RankError::CreateFromUsize(u))
+        }
+    }
 }
 
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum RankError {
     #[error("Unable to create rank from char {0}")]
     CreateFromChar(String),
+    #[error("Unable to create rank from usize {0}")]
+    CreateFromUsize(usize),
 }
 
 #[cfg(test)]

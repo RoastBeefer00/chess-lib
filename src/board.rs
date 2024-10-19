@@ -1,5 +1,6 @@
 use crate::piece::{self, Color, Piece, PieceType};
 use std::collections::HashMap;
+use std::error::Error;
 use strum::IntoEnumIterator;
 use crate::movement::{Move, SpecialMove};
 use crate::file::File;
@@ -183,6 +184,115 @@ impl Board {
             Some(piece) => Ok(piece),
             None => Err(SquareError::NotFound(square.file, square.rank)),
         }
+    }
+
+    pub fn get_moves(&self, square: &Square) -> Result<Vec<Move>, SquareError> {
+        let mut moves = Vec::new();
+
+        match self.get_piece(square) {
+            Ok(p) => {
+                if let Some(piece) = p {
+                    match piece.unit {
+                        PieceType::Pawn => {
+                            match square.rank {
+                                Rank::One => {},
+                                Rank::Two => {
+                                    match piece.color {
+                                        Color::White => {
+                                            moves.push(Move {
+                                                from: square.clone(),
+                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 1).unwrap()),
+                                                special: None,
+                                            });
+                                            moves.push(Move {
+                                                from: square.clone(),
+                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 2).unwrap()),
+                                                special: None,
+                                            });
+                                        },
+                                        Color::Black => {
+                                            PieceType::iter()
+                                                .for_each(|t| {
+                                                    match t {
+                                                        PieceType::Pawn | PieceType::King => {},
+                                                        _ => {
+                                                            moves.push(Move {
+                                                                from: square.clone(),
+                                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 1).unwrap()),
+                                                                special: Some(SpecialMove::Promotion(t)),
+                                                            });
+                                                        },
+                                                    }
+                                                });
+                                        },
+                                    }
+                                },
+                                Rank::Seven => {
+                                    match piece.color {
+                                        Color::Black => {
+                                            moves.push(Move {
+                                                from: square.clone(),
+                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 1).unwrap()),
+                                                special: None,
+                                            });
+                                            moves.push(Move {
+                                                from: square.clone(),
+                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 2).unwrap()),
+                                                special: None,
+                                            });
+                                        },
+                                        Color::White => {
+                                            PieceType::iter()
+                                                .for_each(|t| {
+                                                    match t {
+                                                        PieceType::Pawn | PieceType::King => {},
+                                                        _ => {
+                                                            moves.push(Move {
+                                                                from: square.clone(),
+                                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 1).unwrap()),
+                                                                special: Some(SpecialMove::Promotion(t)),
+                                                            });
+                                                        },
+                                                    }
+                                                });
+                                        },
+                                    }
+                                },
+                                Rank::Eight => {},
+                                _ => {
+                                    match piece.color {
+                                        Color::White => {
+                                            moves.push(Move {
+                                                from: square.clone(),
+                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 1).unwrap()),
+                                                special: None,
+                                            });
+                                        },
+                                        Color::Black => {
+                                            moves.push(Move {
+                                                from: square.clone(),
+                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 1).unwrap()),
+                                                special: None,
+                                            });
+                                        },
+                                    }
+                                },
+                            }
+                            if square.rank == Rank::Two && piece.color == Color::White {
+                            }
+                        },
+                        PieceType::Bishop => {},
+                        PieceType::Knight => {},
+                        PieceType::Rook => {},
+                        PieceType::King => {},
+                        PieceType::Queen => {},
+                    }
+                };
+            },
+            Err(e) => return Err(e),
+        }
+
+        Ok(moves)
     }
     
     pub fn make_move(&mut self, m: Move) -> Result<(), SquareError> {
