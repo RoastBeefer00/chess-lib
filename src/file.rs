@@ -32,12 +32,28 @@ impl File {
             _ => Err(FileError::CreateFromChar(c.to_string())),
         }
     }
+
+    pub fn from_usize(u: usize) -> Result<Self, FileError> {
+        match u {
+            1 => Ok(Self::A),
+            2 => Ok(Self::B),
+            3 => Ok(Self::C),
+            4 => Ok(Self::D),
+            5 => Ok(Self::E),
+            6 => Ok(Self::F),
+            7 => Ok(Self::G),
+            8 => Ok(Self::H),
+            _ => Err(FileError::CreateFromUsize(u)),
+        }
+    }
 }
 
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum FileError {
     #[error("Unable to create file from char {0}")]
     CreateFromChar(String),
+    #[error("Unable to create file from usize {0}")]
+    CreateFromUsize(usize),
 }
 
 #[cfg(test)]

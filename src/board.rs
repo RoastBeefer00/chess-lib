@@ -194,98 +194,227 @@ impl Board {
                 if let Some(piece) = p {
                     match piece.unit {
                         PieceType::Pawn => {
-                            match square.rank {
-                                Rank::One => {},
-                                Rank::Two => {
-                                    match piece.color {
-                                        Color::White => {
-                                            moves.push(Move {
-                                                from: square.clone(),
-                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 1).unwrap()),
-                                                special: None,
-                                            });
-                                            moves.push(Move {
-                                                from: square.clone(),
-                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 2).unwrap()),
-                                                special: None,
-                                            });
-                                        },
-                                        Color::Black => {
-                                            PieceType::iter()
-                                                .for_each(|t| {
-                                                    match t {
-                                                        PieceType::Pawn | PieceType::King => {},
-                                                        _ => {
-                                                            moves.push(Move {
-                                                                from: square.clone(),
-                                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 1).unwrap()),
-                                                                special: Some(SpecialMove::Promotion(t)),
-                                                            });
-                                                        },
-                                                    }
-                                                });
-                                        },
-                                    }
-                                },
-                                Rank::Seven => {
-                                    match piece.color {
-                                        Color::Black => {
-                                            moves.push(Move {
-                                                from: square.clone(),
-                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 1).unwrap()),
-                                                special: None,
-                                            });
-                                            moves.push(Move {
-                                                from: square.clone(),
-                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 2).unwrap()),
-                                                special: None,
-                                            });
-                                        },
-                                        Color::White => {
-                                            PieceType::iter()
-                                                .for_each(|t| {
-                                                    match t {
-                                                        PieceType::Pawn | PieceType::King => {},
-                                                        _ => {
-                                                            moves.push(Move {
-                                                                from: square.clone(),
-                                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 1).unwrap()),
-                                                                special: Some(SpecialMove::Promotion(t)),
-                                                            });
-                                                        },
-                                                    }
-                                                });
-                                        },
-                                    }
-                                },
-                                Rank::Eight => {},
-                                _ => {
-                                    match piece.color {
-                                        Color::White => {
-                                            moves.push(Move {
-                                                from: square.clone(),
-                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() + 1).unwrap()),
-                                                special: None,
-                                            });
-                                        },
-                                        Color::Black => {
-                                            moves.push(Move {
-                                                from: square.clone(),
-                                                to: Square::new(square.file, Rank::from_usize(square.rank.value() - 1).unwrap()),
-                                                special: None,
-                                            });
-                                        },
-                                    }
-                                },
+                            // Move two forward
+                            if let Ok(m) = Move::up(1, square.clone(), piece.color) {
+                                moves.push(m);
                             }
-                            if square.rank == Rank::Two && piece.color == Color::White {
+
+                            // Move one forward
+                            if let Ok(m) = Move::up(1, square.clone(), piece.color) {
+                                if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
+                                    PieceType::iter()
+                                        .for_each(|t| {
+                                            match t {
+                                                PieceType::Pawn | PieceType::King => {},
+                                                _ => {
+                                                    let mut m = m.clone();
+                                                    m.special = Some(SpecialMove::Promotion(t));
+                                                    moves.push(m);
+                                                },                                                        
+                                            }
+                                        });
+                                } else {
+                                    moves.push(m);
+                                }
+                            }
+
+                            // Right capture
+                            if let Ok(m) = Move::diag_up_right(1, square.clone(), piece.color) {
+                                if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
+                                    PieceType::iter()
+                                        .for_each(|t| {
+                                            match t {
+                                                PieceType::Pawn | PieceType::King => {},
+                                                _ => {
+                                                    let mut m = m.clone();
+                                                    m.special = Some(SpecialMove::Promotion(t));
+                                                    moves.push(m);
+                                                },                                                        
+                                            }
+                                        });
+                                } else {
+                                    moves.push(m);
+                                }
+                            }
+
+                            // Left capture
+                            if let Ok(m) = Move::diag_up_left(1, square.clone(), piece.color) {
+                                if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
+                                    PieceType::iter()
+                                        .for_each(|t| {
+                                            match t {
+                                                PieceType::Pawn | PieceType::King => {},
+                                                _ => {
+                                                    let mut m = m.clone();
+                                                    m.special = Some(SpecialMove::Promotion(t));
+                                                    moves.push(m);
+                                                },                                                        
+                                            }
+                                        });
+                                } else {
+                                    moves.push(m);
+                                }
                             }
                         },
-                        PieceType::Bishop => {},
+                        PieceType::Bishop => {
+                            // Diag Up Left
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_up_left(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Diag Up Right
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_up_right(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Diag Down Left
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_down_left(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Diag Down Right
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_down_right(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+                        },
                         PieceType::Knight => {},
-                        PieceType::Rook => {},
-                        PieceType::King => {},
-                        PieceType::Queen => {},
+                        PieceType::Rook => {
+                            // Up 
+                            let mut i = 1;
+                            while let Ok(m) = Move::up(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Down
+                            let mut i = 1;
+                            while let Ok(m) = Move::down(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Left
+                            let mut i = 1;
+                            while let Ok(m) = Move::left(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Right
+                            let mut i = 1;
+                            while let Ok(m) = Move::right(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+                        },
+                        PieceType::King => {
+                            // Move Up
+                            if let Ok(m) = Move::up(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+
+                            // Move Down
+                            if let Ok(m) = Move::down(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+
+                            // Move Left
+                            if let Ok(m) = Move::left(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+
+                            // Move Right
+                            if let Ok(m) = Move::right(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+
+                            // Move Up + Left
+                            if let Ok(m) = Move::diag_up_left(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+                                    
+                            // Move Up + Right
+                            if let Ok(m) = Move::diag_up_right(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+                                    
+                            // Move Down + Left
+                            if let Ok(m) = Move::diag_down_left(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+                                    
+                            // Move Down + Right
+                            if let Ok(m) = Move::diag_down_right(1, square.clone(), piece.color) {
+                                moves.push(m);
+                            }
+                                    
+                        },
+                        PieceType::Queen => {
+                            // Move Up
+                            let mut i = 1;
+                            while let Ok(m) = Move::up(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Move Down
+                            let mut i = 1;
+                            while let Ok(m) = Move::down(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Move Left
+                            let mut i = 1;
+                            while let Ok(m) = Move::left(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Move Right
+                            let mut i = 1;
+                            while let Ok(m) = Move::right(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                            // Move Up + Left
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_up_left(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+                                    
+                            // Move Up + Right
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_up_right(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+                                    
+                            // Move Down + Left
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_down_left(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+                                    
+                            // Move Down + Right
+                            let mut i = 1;
+                            while let Ok(m) = Move::diag_down_right(i, square.clone(), piece.color) {
+                                moves.push(m);
+                                i += 1;
+                            }
+
+                        },
                     }
                 };
             },

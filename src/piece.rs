@@ -13,6 +13,7 @@ impl Piece {
             color,
         }
     }
+
 }
 
 #[derive(EnumIter, Debug, PartialEq, Copy, Clone)]
