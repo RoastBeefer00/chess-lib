@@ -9,6 +9,7 @@ use crate::square::{Square, SquareError};
 #[derive(Debug, PartialEq)]
 pub struct Board {
     pub squares: HashMap<Square, Option<Piece>>,
+    pub history: Vec<Move>,
 }
 
 impl Default for Board {
@@ -151,7 +152,10 @@ impl Default for Board {
             }
         }
 
-        Self { squares }
+        Self { 
+            squares,
+            history: Vec::new(),
+        }
     }
 }
 
@@ -194,13 +198,13 @@ impl Board {
                     match piece.unit {
                         PieceType::Pawn => {
                             // Move two forward
-                            if let Ok(m) = Move::up(1, *square, piece.color) {
+                            if let Ok(m) = Move::up(&self, 1, *square) {
                                 moves.push(m);
                             }
 
                             // Move one forward
-                            if let Ok(m) = Move::up(1, *square, piece.color) {
-                                if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
+                            if let Ok(m) = Move::up(&self, 1, *square) {
+                                if m.to.0.rank == Rank::Eight || m.to.0.rank == Rank::One {
                                     PieceType::iter()
                                         .for_each(|t| {
                                             match t {
@@ -218,8 +222,8 @@ impl Board {
                             }
 
                             // Right capture
-                            if let Ok(m) = Move::diag_up_right(1, *square, piece.color) {
-                                if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
+                            if let Ok(m) = Move::diag_up_right(&self, 1, *square) {
+                                if m.to.0.rank == Rank::Eight || m.to.0.rank == Rank::One {
                                     PieceType::iter()
                                         .for_each(|t| {
                                             match t {
@@ -237,8 +241,8 @@ impl Board {
                             }
 
                             // Left capture
-                            if let Ok(m) = Move::diag_up_left(1, *square, piece.color) {
-                                if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
+                            if let Ok(m) = Move::diag_up_left(&self, 1, *square) {
+                                if m.to.0.rank == Rank::Eight || m.to.0.rank == Rank::One {
                                     PieceType::iter()
                                         .for_each(|t| {
                                             match t {
@@ -258,28 +262,28 @@ impl Board {
                         PieceType::Bishop => {
                             // Diag Up Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_left(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_up_left(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Diag Up Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_right(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_up_right(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Diag Down Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_left(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_down_left(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Diag Down Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_right(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_down_right(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
@@ -288,70 +292,70 @@ impl Board {
                         PieceType::Rook => {
                             // Up 
                             let mut i = 1;
-                            while let Ok(m) = Move::up(i, *square, piece.color) {
+                            while let Ok(m) = Move::up(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Down
                             let mut i = 1;
-                            while let Ok(m) = Move::down(i, *square, piece.color) {
+                            while let Ok(m) = Move::down(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Left
                             let mut i = 1;
-                            while let Ok(m) = Move::left(i, *square, piece.color) {
+                            while let Ok(m) = Move::left(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Right
                             let mut i = 1;
-                            while let Ok(m) = Move::right(i, *square, piece.color) {
+                            while let Ok(m) = Move::right(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
                         },
                         PieceType::King => {
                             // Move Up
-                            if let Ok(m) = Move::up(1, *square, piece.color) {
+                            if let Ok(m) = Move::up(&self, 1, *square) {
                                 moves.push(m);
                             }
 
                             // Move Down
-                            if let Ok(m) = Move::down(1, *square, piece.color) {
+                            if let Ok(m) = Move::down(&self, 1, *square) {
                                 moves.push(m);
                             }
 
                             // Move Left
-                            if let Ok(m) = Move::left(1, *square, piece.color) {
+                            if let Ok(m) = Move::left(&self, 1, *square) {
                                 moves.push(m);
                             }
 
                             // Move Right
-                            if let Ok(m) = Move::right(1, *square, piece.color) {
+                            if let Ok(m) = Move::right(&self, 1, *square) {
                                 moves.push(m);
                             }
 
                             // Move Up + Left
-                            if let Ok(m) = Move::diag_up_left(1, *square, piece.color) {
+                            if let Ok(m) = Move::diag_up_left(&self, 1, *square) {
                                 moves.push(m);
                             }
                                     
                             // Move Up + Right
-                            if let Ok(m) = Move::diag_up_right(1, *square, piece.color) {
+                            if let Ok(m) = Move::diag_up_right(&self, 1, *square) {
                                 moves.push(m);
                             }
                                     
                             // Move Down + Left
-                            if let Ok(m) = Move::diag_down_left(1, *square, piece.color) {
+                            if let Ok(m) = Move::diag_down_left(&self, 1, *square) {
                                 moves.push(m);
                             }
                                     
                             // Move Down + Right
-                            if let Ok(m) = Move::diag_down_right(1, *square, piece.color) {
+                            if let Ok(m) = Move::diag_down_right(&self, 1, *square) {
                                 moves.push(m);
                             }
                                     
@@ -359,56 +363,56 @@ impl Board {
                         PieceType::Queen => {
                             // Move Up
                             let mut i = 1;
-                            while let Ok(m) = Move::up(i, *square, piece.color) {
+                            while let Ok(m) = Move::up(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Down
                             let mut i = 1;
-                            while let Ok(m) = Move::down(i, *square, piece.color) {
+                            while let Ok(m) = Move::down(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Left
                             let mut i = 1;
-                            while let Ok(m) = Move::left(i, *square, piece.color) {
+                            while let Ok(m) = Move::left(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Right
                             let mut i = 1;
-                            while let Ok(m) = Move::right(i, *square, piece.color) {
+                            while let Ok(m) = Move::right(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Up + Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_left(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_up_left(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
                                     
                             // Move Up + Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_right(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_up_right(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
                                     
                             // Move Down + Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_left(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_down_left(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
                                     
                             // Move Down + Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_right(i, *square, piece.color) {
+                            while let Ok(m) = Move::diag_down_right(&self, i, *square) {
                                 moves.push(m);
                                 i += 1;
                             }
@@ -426,13 +430,13 @@ impl Board {
     pub fn make_move(&mut self, m: Move) -> Result<(), SquareError> {
         if let Some(s) = m.special {
             // Get piece on "from" square 
-            let from_piece = match self.get_piece(&m.from) {
+            let from_piece = match self.get_piece(&m.from.0) {
                 Ok(piece) => piece.to_owned(),
                 Err(e) => return Err(e),
             };
 
             // Validate the "to" square exists
-            self.get_piece(&m.to)?;
+            self.get_piece(&m.to.0)?;
 
             if let Some(piece) = from_piece {
                 match s {
@@ -443,12 +447,12 @@ impl Board {
 
                         match piece.color {
                             Color::White => {
-                                if m.to.rank != Rank::Eight {
+                                if m.to.0.rank != Rank::Eight {
                                     return Err(SquareError::InvalidPromotion);
                                 }
                             },
                             Color::Black => {
-                                if m.to.rank != Rank::One {
+                                if m.to.0.rank != Rank::One {
                                     return Err(SquareError::InvalidPromotion);
                                 }
                             },
@@ -459,13 +463,13 @@ impl Board {
                             color: piece.color,
                         });
                         // Validate the "to" square exists
-                        self.get_piece(&m.to)?;
+                        self.get_piece(&m.to.0)?;
                         // Update pieces in squares
                         {
-                            self.squares.entry(m.to).and_modify(|piece| *piece = promotion_piece);
+                            self.squares.entry(m.to.0).and_modify(|piece| *piece = promotion_piece);
                         }
                         {
-                            self.squares.entry(m.from).and_modify(|piece| *piece = None);
+                            self.squares.entry(m.from.0).and_modify(|piece| *piece = None);
                         }
                     },
                     SpecialMove::CastleKingside => {
@@ -483,7 +487,7 @@ impl Board {
                                     file: File::G,
                                     rank: Rank::One,
                                 };
-                                if m.from != e1 || m.to != g1 {
+                                if m.from.0 != e1 || m.to.0 != g1 {
                                     return Err(SquareError::CastleKingsideWhite);
                                 }
 
@@ -504,7 +508,7 @@ impl Board {
                                 }
                                 // Move the king to g1
                                 {
-                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                    self.squares.entry(m.to.0).and_modify(|piece| *piece = from_piece);
                                 }
                                 // Make e1 empty
                                 {
@@ -530,7 +534,7 @@ impl Board {
                                     file: File::G,
                                     rank: Rank::Eight,
                                 };
-                                if m.from != e8 || m.to != g8 {
+                                if m.from.0 != e8 || m.to.0 != g8 {
                                     return Err(SquareError::CastleKingsideWhite);
                                 }
 
@@ -551,7 +555,7 @@ impl Board {
                                 }
                                 // Move the king to g8
                                 {
-                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                    self.squares.entry(m.to.0).and_modify(|piece| *piece = from_piece);
                                 }
                                 // Make e8 empty
                                 {
@@ -585,7 +589,7 @@ impl Board {
                                     file: File::C,
                                     rank: Rank::One,
                                 };
-                                if m.from != e1 || m.to != c1 {
+                                if m.from.0 != e1 || m.to.0 != c1 {
                                     return Err(SquareError::CastleQueenSideWhite);
                                 }
 
@@ -606,7 +610,7 @@ impl Board {
                                 }
                                 // Move the king to c1
                                 {
-                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                    self.squares.entry(m.to.0).and_modify(|piece| *piece = from_piece);
                                 }
                                 // Make e1 empty
                                 {
@@ -632,7 +636,7 @@ impl Board {
                                     file: File::C,
                                     rank: Rank::Eight,
                                 };
-                                if m.from != e8 || m.to != c8 {
+                                if m.from.0 != e8 || m.to.0 != c8 {
                                     return Err(SquareError::CastleQueenSideBlack);
                                 }
 
@@ -653,7 +657,7 @@ impl Board {
                                 }
                                 // Move the king to c8
                                 {
-                                    self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                                    self.squares.entry(m.to.0).and_modify(|piece| *piece = from_piece);
                                 }
                                 // Make e8 empty
                                 {
@@ -678,7 +682,7 @@ impl Board {
             }
         } else {
             // Get piece on "from" square to be placed in the "to" square
-            let from_piece = match self.get_piece(&m.from) {
+            let from_piece = match self.get_piece(&m.from.0) {
                 Ok(piece) => piece.to_owned(),
                 Err(e) => return Err(e),
             };
@@ -688,16 +692,17 @@ impl Board {
             }
 
             // Validate the "to" square exists
-            self.get_piece(&m.to)?;
+            self.get_piece(&m.to.0)?;
             // Update pieces in squares
             {
-                self.squares.entry(m.to).and_modify(|piece| *piece = from_piece);
+                self.squares.entry(m.to.0).and_modify(|piece| *piece = from_piece);
             }
             {
-                self.squares.entry(m.from).and_modify(|piece| *piece = None);
+                self.squares.entry(m.from.0).and_modify(|piece| *piece = None);
             }
         }
 
+        self.history.push(m);
         Ok(())
     }
 }

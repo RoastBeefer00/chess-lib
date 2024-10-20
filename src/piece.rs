@@ -1,6 +1,6 @@
 use strum::EnumIter;
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct Piece {
     pub unit: PieceType,
     pub color: Color,
