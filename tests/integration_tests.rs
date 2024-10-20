@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use chess_lib::board::Board;
 use chess_lib::square::{Square, SquareError};
 use chess_lib::file::File;

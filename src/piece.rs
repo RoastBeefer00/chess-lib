@@ -1,4 +1,4 @@
-use strum::{IntoEnumIterator, EnumIter};
+use strum::EnumIter;
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Piece {
@@ -48,6 +48,7 @@ pub enum Color {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use strum::IntoEnumIterator;
 
     #[test]
     fn test_piece_values() {

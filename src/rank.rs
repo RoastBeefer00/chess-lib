@@ -1,5 +1,4 @@
 use strum::EnumIter;
-use strum::IntoEnumIterator;
 use thiserror::Error;
 
 #[derive(Eq, Hash, EnumIter, Debug, PartialEq, Clone, Copy)]
@@ -59,6 +58,7 @@ pub enum RankError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use strum::IntoEnumIterator;
 
     #[test]
     fn test_rank_values() {

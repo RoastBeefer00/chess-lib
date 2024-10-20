@@ -1,6 +1,5 @@
 use crate::piece::{self, Color, Piece, PieceType};
 use std::collections::HashMap;
-use std::error::Error;
 use strum::IntoEnumIterator;
 use crate::movement::{Move, SpecialMove};
 use crate::file::File;
@@ -195,19 +194,19 @@ impl Board {
                     match piece.unit {
                         PieceType::Pawn => {
                             // Move two forward
-                            if let Ok(m) = Move::up(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::up(1, *square, piece.color) {
                                 moves.push(m);
                             }
 
                             // Move one forward
-                            if let Ok(m) = Move::up(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::up(1, *square, piece.color) {
                                 if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
                                     PieceType::iter()
                                         .for_each(|t| {
                                             match t {
                                                 PieceType::Pawn | PieceType::King => {},
                                                 _ => {
-                                                    let mut m = m.clone();
+                                                    let mut m = m;
                                                     m.special = Some(SpecialMove::Promotion(t));
                                                     moves.push(m);
                                                 },                                                        
@@ -219,14 +218,14 @@ impl Board {
                             }
 
                             // Right capture
-                            if let Ok(m) = Move::diag_up_right(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::diag_up_right(1, *square, piece.color) {
                                 if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
                                     PieceType::iter()
                                         .for_each(|t| {
                                             match t {
                                                 PieceType::Pawn | PieceType::King => {},
                                                 _ => {
-                                                    let mut m = m.clone();
+                                                    let mut m = m;
                                                     m.special = Some(SpecialMove::Promotion(t));
                                                     moves.push(m);
                                                 },                                                        
@@ -238,14 +237,14 @@ impl Board {
                             }
 
                             // Left capture
-                            if let Ok(m) = Move::diag_up_left(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::diag_up_left(1, *square, piece.color) {
                                 if m.to.rank == Rank::Eight || m.to.rank == Rank::One {
                                     PieceType::iter()
                                         .for_each(|t| {
                                             match t {
                                                 PieceType::Pawn | PieceType::King => {},
                                                 _ => {
-                                                    let mut m = m.clone();
+                                                    let mut m = m;
                                                     m.special = Some(SpecialMove::Promotion(t));
                                                     moves.push(m);
                                                 },                                                        
@@ -259,28 +258,28 @@ impl Board {
                         PieceType::Bishop => {
                             // Diag Up Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_left(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_up_left(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Diag Up Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_right(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_up_right(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Diag Down Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_left(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_down_left(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Diag Down Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_right(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_down_right(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
@@ -289,70 +288,70 @@ impl Board {
                         PieceType::Rook => {
                             // Up 
                             let mut i = 1;
-                            while let Ok(m) = Move::up(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::up(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Down
                             let mut i = 1;
-                            while let Ok(m) = Move::down(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::down(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Left
                             let mut i = 1;
-                            while let Ok(m) = Move::left(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::left(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Right
                             let mut i = 1;
-                            while let Ok(m) = Move::right(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::right(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
                         },
                         PieceType::King => {
                             // Move Up
-                            if let Ok(m) = Move::up(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::up(1, *square, piece.color) {
                                 moves.push(m);
                             }
 
                             // Move Down
-                            if let Ok(m) = Move::down(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::down(1, *square, piece.color) {
                                 moves.push(m);
                             }
 
                             // Move Left
-                            if let Ok(m) = Move::left(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::left(1, *square, piece.color) {
                                 moves.push(m);
                             }
 
                             // Move Right
-                            if let Ok(m) = Move::right(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::right(1, *square, piece.color) {
                                 moves.push(m);
                             }
 
                             // Move Up + Left
-                            if let Ok(m) = Move::diag_up_left(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::diag_up_left(1, *square, piece.color) {
                                 moves.push(m);
                             }
                                     
                             // Move Up + Right
-                            if let Ok(m) = Move::diag_up_right(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::diag_up_right(1, *square, piece.color) {
                                 moves.push(m);
                             }
                                     
                             // Move Down + Left
-                            if let Ok(m) = Move::diag_down_left(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::diag_down_left(1, *square, piece.color) {
                                 moves.push(m);
                             }
                                     
                             // Move Down + Right
-                            if let Ok(m) = Move::diag_down_right(1, square.clone(), piece.color) {
+                            if let Ok(m) = Move::diag_down_right(1, *square, piece.color) {
                                 moves.push(m);
                             }
                                     
@@ -360,56 +359,56 @@ impl Board {
                         PieceType::Queen => {
                             // Move Up
                             let mut i = 1;
-                            while let Ok(m) = Move::up(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::up(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Down
                             let mut i = 1;
-                            while let Ok(m) = Move::down(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::down(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Left
                             let mut i = 1;
-                            while let Ok(m) = Move::left(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::left(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Right
                             let mut i = 1;
-                            while let Ok(m) = Move::right(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::right(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
 
                             // Move Up + Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_left(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_up_left(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
                                     
                             // Move Up + Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_up_right(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_up_right(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
                                     
                             // Move Down + Left
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_left(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_down_left(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
                                     
                             // Move Down + Right
                             let mut i = 1;
-                            while let Ok(m) = Move::diag_down_right(i, square.clone(), piece.color) {
+                            while let Ok(m) = Move::diag_down_right(i, *square, piece.color) {
                                 moves.push(m);
                                 i += 1;
                             }
@@ -684,7 +683,7 @@ impl Board {
                 Err(e) => return Err(e),
             };
 
-            if from_piece == None {
+            if from_piece.is_none() {
                 return Err(SquareError::MoveEmptySquare)
             }
 

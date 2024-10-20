@@ -1,4 +1,5 @@
 use thiserror::Error;
+use std::str::FromStr;
 use crate::file::File;
 use crate::rank::Rank;
 
@@ -9,15 +10,9 @@ pub struct Square {
     pub rank: Rank,
 }
 
-impl Square {
-    pub fn new(file: File, rank: Rank) -> Self {
-        Self {
-            file,
-            rank,
-        }
-    }
-
-    pub fn from_str(s: &str) -> Result<Self, SquareError> {
+impl FromStr for Square {
+    type Err = SquareError;
+    fn from_str(s: &str) -> Result<Self, SquareError> {
        if s.len() != 2 {
            return Err(SquareError::CreateFromStr(s.to_string()));
        } 
@@ -32,10 +27,16 @@ impl Square {
            Err(_) => return Err(SquareError::CreateFromStr(s.to_string())),
        };
  
-       Ok(Self {
-           file,
-           rank,
-       })
+       Ok(Self::new(file, rank))
+    }
+}
+
+impl Square {
+    pub fn new(file: File, rank: Rank) -> Self {
+        Self {
+            file,
+            rank,
+        }
     }
 }
 
