@@ -16,7 +16,7 @@ impl Piece {
 
 }
 
-#[derive(EnumIter, Debug, PartialEq, Copy, Clone)]
+#[derive(EnumIter, Debug, PartialEq, Eq, Copy, Clone)]
 pub enum PieceType {
     Pawn,
     Knight,
@@ -39,7 +39,7 @@ impl PieceType {
     }
 }
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum Color {
     Black,
     White,

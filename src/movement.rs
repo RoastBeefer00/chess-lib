@@ -4,7 +4,7 @@ use crate::piece::{PieceType, Color};
 use crate::rank::Rank;
 use crate::file::File;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SpecialMove {
     Promotion(PieceType),
     // EnPassant,
@@ -12,7 +12,7 @@ pub enum SpecialMove {
     CastleQueenside,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Move {
     pub from: Square,
     pub to: Square,
@@ -241,7 +241,7 @@ impl Move {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum MoveError {
     #[error("Cannot move up amount {0} from square {1:?} with color {2:?}")]
     UpError(usize, Square, Color),
@@ -259,4 +259,23 @@ pub enum MoveError {
     DiagDownLeftError(usize, Square, Color),
     #[error("Cannot move diagonally down+right amount {0} from square {1:?} with color {2:?}")]
     DiagDownRightError(usize, Square, Color),
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_up() {
+        let square = Square::new(File::D, Rank::Six);
+        let up = Move::up(1, square, Color::White).unwrap();
+        assert_eq!(Move {
+            from: square,
+            to: Square::new(File::D, Rank::Seven),
+            special: None,
+        }, up);
+
+        let square = Square::new(File::D, Rank::Eight);
+        assert_eq!(Err(MoveError::UpError(1, square, Color::White)), Move::up(1, square, Color::White));
+    }
 }
