@@ -2,6 +2,8 @@ use thiserror::Error;
 use std::str::FromStr;
 use crate::file::File;
 use crate::rank::Rank;
+use crate::piece::Piece;
+use crate::movement::Move;
 
 
 #[derive(Eq, Hash, Debug, PartialEq, Clone, Copy)]
@@ -44,12 +46,14 @@ impl Square {
 pub enum SquareError {
     #[error("Unable to find square at rank {1:?} and file {0:?}")]
     NotFound(File, Rank),
+    #[error("Piece {0:?} found at square {1:?} does not match piece in requested move {2:?}")]
+    PieceNotMatch(Piece, Square, Move),
     #[error("Unable to create square from str {0}")]
     CreateFromStr(String),
     #[error("Promotions must be on the first or eight rank and cannot be a pawn")]
     InvalidPromotion,
-    #[error("Cannot make a move from an empty square")]
-    MoveEmptySquare,
+    #[error("Cannot make a move from an empty square: {0:?}")]
+    MoveEmptySquare(Square),
     #[error("Must select King when castling")]
     CastleWithKing,
     #[error("Must move king from e1 to g1 when castling kingside with white")]

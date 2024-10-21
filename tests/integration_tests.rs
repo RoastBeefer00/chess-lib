@@ -43,29 +43,30 @@ fn test_get_piece() {
     assert_eq!(&Some(piece), result.unwrap());
 }
 
-// #[test]
-// fn test_move_piece() {
-//     let mut board = Board::default();
-//     let e2 = Square {
-//         file: File::E,
-//         rank: Rank::Two,
-//     };
-//     let e4 = Square {
-//         file: File::E,
-//         rank: Rank::Four,
-//     };
-//     let m = Move {
-//         from: e2,
-//         to: e4,
-//         special: None,
-//     };
-//     board.make_move(m).unwrap();
-//     assert_eq!(&None, board.get_piece(&e2).unwrap());
-//     assert_eq!(&Some(Piece {
-//         unit: PieceType::Pawn,
-//         color: Color::White,
-//     }), board.get_piece(&e4).unwrap());
-// }
+#[test]
+fn test_move_piece() {
+    let mut board = Board::default();
+    let e2 = Square {
+        file: File::E,
+        rank: Rank::Two,
+    };
+    let e4 = Square {
+        file: File::E,
+        rank: Rank::Four,
+    };
+    let m = Move {
+        from: (e2, Piece::new(PieceType::Pawn, Color::White)),
+        to: e4,
+        ..Default::default()
+    };
+    board.make_move(m).unwrap();
+    assert_eq!(&None, board.get_piece(&e2).unwrap());
+    assert_eq!(&Some(Piece {
+        unit: PieceType::Pawn,
+        color: Color::White,
+    }), board.get_piece(&e4).unwrap());
+    assert_eq!(1, board.history.len());
+}
 
 #[test]
 fn test_square_from_str() {

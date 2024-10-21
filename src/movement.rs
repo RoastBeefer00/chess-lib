@@ -17,7 +17,8 @@ pub enum SpecialMove {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Move {
     pub from: (Square, Piece),
-    pub to: (Square, Option<Piece>),
+    pub to: Square,
+    pub is_capture: bool,
     pub special: Option<SpecialMove>,
 } 
 
@@ -25,7 +26,8 @@ impl Default for Move {
     fn default() -> Self {
         Self {
             from: (Square::new(File::E, Rank::Two), Piece::new(PieceType::Pawn, Color::White)),
-            to: (Square::new(File::E, Rank::Four), None),
+            to: Square::new(File::E, Rank::Four),
+            is_capture: false,
             special: None,
         }
     }
@@ -56,11 +58,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::UpError(amount, square, *from_piece))
                 }
@@ -73,11 +81,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::UpError(amount, square, *from_piece))
                 }
@@ -105,11 +119,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DownError(amount, square, *from_piece))
                 }
@@ -122,11 +142,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DownError(amount, square, *from_piece))
                 }
@@ -154,11 +180,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::LeftError(amount, square, *from_piece))
                 }
@@ -171,11 +203,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::LeftError(amount, square, *from_piece))
                 }
@@ -203,11 +241,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::RightError(amount, square, *from_piece))
                 }
@@ -220,11 +264,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::RightError(amount, square, *from_piece))
                 }
@@ -252,11 +302,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagUpLeftError(amount, square, *from_piece))
                 }                               
@@ -269,11 +325,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagUpLeftError(amount, square, *from_piece))
                 }                               
@@ -301,11 +363,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagUpRightError(amount, square, *from_piece))
                 }                               
@@ -318,11 +386,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagUpRightError(amount, square, *from_piece))
                 }                               
@@ -350,11 +424,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagDownLeftError(amount, square, *from_piece))
                 }                               
@@ -367,11 +447,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagDownLeftError(amount, square, *from_piece))
                 }                               
@@ -399,11 +485,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagDownRightError(amount, square, *from_piece))
                 }                               
@@ -416,11 +508,17 @@ impl Move {
                         Err(_) => return Err(MoveError::PieceNotFound(square)),
                     };
 
-                    Ok(Move {
+                    let mut m = Move {
                         from: (square, *from_piece),
-                        to: (to_square, *to_piece),
-                        special: None,
-                    })
+                        to: to_square,
+                        ..Default::default()
+                    };
+
+                    if to_piece.is_some() {
+                        m.is_capture = true;
+                    }
+
+                    Ok(m)
                 } else {
                     Err(MoveError::DiagDownRightError(amount, square, *from_piece))
                 }                               
@@ -463,8 +561,8 @@ mod tests {
         let up = Move::up(&board, 1, square).unwrap();
         assert_eq!(Move {
             from: (square, piece),
-            to: (Square::new(File::D, Rank::Three), None),
-            special: None,
+            to: Square::new(File::D, Rank::Three),
+            ..Default::default()
         }, up);
 
         let square = Square::new(File::D, Rank::Three);
