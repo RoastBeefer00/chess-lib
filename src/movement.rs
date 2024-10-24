@@ -1,4 +1,5 @@
 use thiserror::Error;
+use std::str::FromStr;
 use crate::square::Square;
 use crate::piece::{PieceType, Color};
 use crate::rank::Rank;
@@ -34,9 +35,93 @@ impl Default for Move {
 }
 
 impl Move {
-    // pub fn from_str(s: &str) -> Result<Self, Error> {
-    //     todo!();
-    // }
+    pub fn from_str(s: &str, color: Color, board: &Board) -> Result<Self, MoveError> {
+        // Pawns
+        if s.len() == 2 {
+            let square = match Square::from_str(s) {
+                Ok(s) => s,
+                Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+            };
+
+            match color {
+                Color::White => {
+                    if square.rank == Rank::Four {
+                        // Check if there is a pawn on the starting square
+                        let piece = match board.get_piece(&Square::new(square.file, Rank::Two)) {
+                            Ok(p) => p,
+                            Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+                        };
+
+                        if let Some(p) = piece {
+                            let from = Square::new(square.file, Rank::Two);
+                            return Ok(Move {
+                                from: (from, p.to_owned()),
+                                to: square,
+                                ..Default::default()
+                            });
+                        };
+                    }
+
+                    let rank = match Rank::from_usize(square.rank.value() - 1) {
+                        Ok(r) => r,
+                        Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+                    };
+
+                    let piece = match board.get_piece(&Square::new(square.file, rank)) {
+                        Ok(p) => p,
+                        Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+                    };
+
+                    if let Some(p) = piece {
+                        return Ok(Move {
+                            from: (Square::new(square.file, rank), p.to_owned()),
+                            to: square,
+                            ..Default::default()
+                        });
+                    } else {
+                        return Err(MoveError::CreateFromStr(s.to_string()));
+                    }
+                },
+                Color::Black => {
+                    // Check if there is a pawn on the starting square
+                    let piece = match board.get_piece(&Square::new(square.file, Rank::Five)) {
+                        Ok(p) => p,
+                        Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+                    };
+
+                    if let Some(p) = piece {
+                        let from = Square::new(square.file, Rank::Seven);
+                        return Ok(Move {
+                            from: (from, p.to_owned()),
+                            to: square,
+                            ..Default::default()
+                        });
+                    };
+
+                    let rank = match Rank::from_usize(square.rank.value() - 1) {
+                        Ok(r) => r,
+                        Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+                    };
+
+                    let piece = match board.get_piece(&Square::new(square.file, rank)) {
+                        Ok(p) => p,
+                        Err(_) => return Err(MoveError::CreateFromStr(s.to_string())),
+                    };
+
+                    if let Some(p) = piece {
+                        return Ok(Move {
+                            from: (Square::new(square.file, rank), p.to_owned()),
+                            to: square,
+                            ..Default::default()
+                        });
+                    } else {
+                        return Err(MoveError::CreateFromStr(s.to_string()));
+                    }
+               },
+            }
+        }
+        todo!();
+    }
     
     pub fn up(board: &Board, amount: usize, square: Square) -> Result<Move, MoveError> {
         let from_piece = match board.get_piece(&square) {
@@ -547,6 +632,8 @@ pub enum MoveError {
     DiagDownRightError(usize, Square, Piece),
     #[error("Unable to find piece at square {0:?}")]
     PieceNotFound(Square),
+    #[error("Unable to create move from str {0:?}")]
+    CreateFromStr(String),
 }
 
 #[cfg(test)]
