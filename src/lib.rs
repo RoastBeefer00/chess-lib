@@ -1,4 +1,5 @@
 pub mod board;
+pub mod game;
 pub mod file;
 pub mod movement;
 pub mod piece;

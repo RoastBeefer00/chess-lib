@@ -2,19 +2,19 @@ use crate::piece::Color;
 use crate::board::Board;
 
 pub struct Player {
-     color: Color,
-     castle_kingside: bool,
-     castle_queenside: bool,
-     material: usize,
+     pub color: Color,
+     pub castle_kingside: bool,
+     pub castle_queenside: bool,
+     pub material: usize,
 }
 
 impl Player {
-    pub fn new(color: Color, board: Board) -> Self {
+    pub fn new(color: Color) -> Self {
         Self {
             color,
             castle_kingside: true,
             castle_queenside: true,
-            material: board.count_material(color),
+            material: 39,
         }
     }
 
